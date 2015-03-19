@@ -1,0 +1,3 @@
+[submodule "BookwormDB"]
+	path = BookwormDB
+	url = https://github.com/Bookworm-project/BookwormDB.git
