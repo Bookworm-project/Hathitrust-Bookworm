@@ -1,5 +1,6 @@
  
 part=06
+blockSize=300M
 
 # FILE PATHS
 logPath=/data/raid3/htrc/logs
@@ -20,6 +21,7 @@ paths:
 BookwormDB:
 	git submodule init
 	git submodule update
+	$(MAKE) -C BookwormDB files/targets
 
 update:
 	git submodule update
@@ -37,4 +39,19 @@ $(processedFeaturePath)/pd-features-$(part):
 
 
 BookwormDB/files/texts/wordlist/wordlist-$(part).txt:
-	BookwormDB/scripts/fast_featurecounter.sh $(processedFeaturePath)/pd-features-$(part) $(tmpPath) $(blockSize) $@
+	BookwormDB/scripts/fast_featurecounter.sh $(processedFeaturePath)/pd-features-$(part).txt.gz $(tmpPath) $(blockSize) $@
+
+BookwormDB/files/targets/encoded: BookwormDB/files/texts/wordlist/wordlist.txt
+#builds up the encoded lists that don't exist yet.
+#I "Make" the catalog files rather than declaring dependency so that changes to 
+#the catalog don't trigger a db rebuild automatically.
+	$(MAKE) -C BookwormDB files/metadata/jsoncatalog_derived.txt
+	$(MAKE) -C BookwormDB files/texts/textids.dbm
+	$(MAKE) -C files/metadata/catalog.txt
+	#$(textStream) | parallel --block-size $(blockSize) -u --pipe bookworm/tokenizer.py
+	cd BookwormDB
+	cat unigrams.txt | parallel --block-size $(blockSize) -u --pipe bookworm/ingestFeatureCounts.py encode --log-level debug
+	cd ../
+	touch BookwormDB/files/targets/encoded
+
+
