@@ -12,16 +12,20 @@ featureFileList=/data/datasets/htrc-feat-extract/pd/pd-file-listing.txt.$(part)
 
 # Log location
 
-all: BookwormDB paths features
+all: BookwormDB HTMetadata-Bookworm features
 
 paths:
 	mkdir -p $(logPath)
 	mkdir -p $(processedFeaturePath)
+	mkdir -p targets
 
-BookwormDB:
+BookwormDB: targets/submodules
+	$(MAKE) -C BookwormDB files/targets
+
+targets/submodules: paths
 	git submodule init
 	git submodule update
-	$(MAKE) -C BookwormDB files/targets
+	touch @
 
 update:
 	git submodule update
@@ -47,11 +51,14 @@ BookwormDB/files/targets/encoded: BookwormDB/files/texts/wordlist/wordlist.txt
 #the catalog don't trigger a db rebuild automatically.
 	$(MAKE) -C BookwormDB files/metadata/jsoncatalog_derived.txt
 	$(MAKE) -C BookwormDB files/texts/textids.dbm
-	$(MAKE) -C files/metadata/catalog.txt
+	$(MAKE) -C BookwormDB files/metadata/catalog.txt
 	#$(textStream) | parallel --block-size $(blockSize) -u --pipe bookworm/tokenizer.py
 	cd BookwormDB
 	cat unigrams.txt | parallel --block-size $(blockSize) -u --pipe bookworm/ingestFeatureCounts.py encode --log-level debug
 	cd ../
 	touch BookwormDB/files/targets/encoded
 
-
+# Nothing depends on this yet to avoid rebuilding, run recipe directly
+jsoncatalog.txt:
+	$(MAKE) -C HTMetadata-Bookworm realjsoncatalog.txt
+	ln -s HTMetadata-Bookworm/realjsoncatalog.txt BookwormDB/files/metadata/jsoncatalog.txt
