@@ -1,3 +1,6 @@
 [submodule "BookwormDB"]
 	path = BookwormDB
 	url = https://github.com/Bookworm-project/BookwormDB.git
+[submodule "HTMetadata-Bookworm"]
+	path = HTMetadata-Bookworm
+	url = https://github.com/Bookworm-project/HTMetadata-Bookworm.git
