@@ -25,7 +25,7 @@ BookwormDB: targets/submodules
 targets/submodules: paths
 	git submodule init
 	git submodule update
-	touch @
+	touch $@
 
 update:
 	git submodule update
