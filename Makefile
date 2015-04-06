@@ -1,11 +1,10 @@
- 
 part=06
 blockSize=300M
 
 # FILE PATHS
-logPath=/data/raid3/htrc/logs
+logPath=logs
 processedFeaturePath=bw-input
-tmpPath=/data/scratch/bookwormtmp/
+tmpPath=/tmp
 
 # Listing of Extracted Features files to process
 featureFileList=/data/datasets/htrc-feat-extract/pd/pd-file-listing.txt.$(part)
@@ -21,6 +20,9 @@ paths:
 
 BookwormDB: targets/submodules
 	$(MAKE) -C BookwormDB files/targets
+
+BookwormGUI: targets/submodules
+	# Nothing needs doing yet
 
 targets/submodules: paths
 	git submodule init
