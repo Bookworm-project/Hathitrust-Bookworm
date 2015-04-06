@@ -63,4 +63,4 @@ BookwormDB/files/targets/encoded: BookwormDB/files/texts/wordlist/wordlist.txt
 # Nothing depends on this yet to avoid rebuilding, run recipe directly
 jsoncatalog.txt:
 	$(MAKE) -C HTMetadata-Bookworm realjsoncatalog.txt
-	ln -s HTMetadata-Bookworm/realjsoncatalog.txt BookwormDB/files/metadata/jsoncatalog.txt
+	ln -s ../../../HTMetadata-Bookworm/realjsoncatalog.txt BookwormDB/files/metadata/jsoncatalog.txt
