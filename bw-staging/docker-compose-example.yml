@@ -1,0 +1,14 @@
+version: "2"
+services:
+  notebook:
+    image: organisciak/bw-staging
+    ports:
+      - "8686:8888"
+    env_file:
+      - ./secrets.env
+    environment:
+      - USE_HTTPS=yes
+    volumes:
+      - /local/path/to/project/repo:/notebooks/project
+      - /local/path/to/feature/files:/notebooks/features
+      - /local/path/to/data/output/dir:/notebooks/data

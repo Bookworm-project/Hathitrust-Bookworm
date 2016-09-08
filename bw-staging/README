@@ -1,0 +1,61 @@
+# Running HathiTrust-Bookworm in a container
+
+Running in a Docker container makes it easier to set up identical environments
+on multiple servers.
+
+This folder contains a Docker definition (the "Dockerfile"). This builds the
+enviroment, extending the jupyter/datascience environment. Custom changes can
+be built with `docker build -t username/bw-staging .`, though I (Peter) will
+eventually upload the package to the Hub, so that docker will automatically
+set everything up when you go to run it.
+
+I put together an example docker-compose file so that managing the arguments
+is easier (and preserved by writing down). Docker Compose is a separate piece
+of software, though, so first, I'll explain the Docker container without
+worrying about compose.
+
+## Docker (FYI)
+
+The default action of the container when run is to start a Jupyter Notebook at
+port 8888 (within the container: to access externally, use the -p
+DESIREDPORT:8888 arg) and in the /notebooks folder. In Docker, the filesystem
+is emphemeral unless you map a folder from your system to the inside of the
+system using the `-v SOURCE:DEST` argument. I'm mapping a (system) folder with
+Extracted Features files to /notebooks/features (inside the container), the
+Hathitrust-Bookworm repo to /notebooks/project, and the place for output data
+to /notebooks/data. So, a complete command would be:
+
+```bash
+docker run organisciak/bw-staging -p 8787:8888 -v
+local/features/dir:/notebooks/features -v /local/htbwrepo/:/notebooks/project
+-v /output/dir:/notebooks/data
+```
+
+Here, the notebook will be accessible at localhost:8787. The container will be
+given a random name, using the `--name` argument can make it more sensible.
+The Jupyter password can be set with the environmental variable PASSWORD (e.g.
+arg `-e PASSWORD=some_pw`) and HTTPS with a self-signed cert can be forced
+with `-e USE_HTTPS`.
+
+To hop onto the command line of a running container, run `docker exec -it
+CONTAINER_NAME bash`. `docker exec` lets you run commands inside the
+container: the args make it interactive.
+
+## Docker Compose
+
+With Docker Compose installed,
+
+1. Copy this folder's `docker-compose-example.yml and `secrets-example.env` to
+remove the `example` part of the filenames.
+
+2. Edit the arguments in `docker-compose.yml`, setting the port that you want
+Jupyter's server to run on (the first number, the second is the internal
+container port 8888), as well as noting the local directories
+with EF files, with the HathiTrust-Bookworm repo, and for outputting data.
+Set a password for the notebook server in `secrets.env`.
+
+3. `docker-compose up`
+
+Done, it should be running now! To jump in to the command line:
+
+`docker exec -it bwstaging_notebook_1 bash`
