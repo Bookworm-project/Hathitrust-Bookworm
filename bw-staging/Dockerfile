@@ -16,7 +16,8 @@ USER jovyan
 RUN conda install \
 	ipyparallel \
 	pytables \
-	dask
+	dask \
+	bokeh
 
 RUN pip install \
 	htrc-feature-reader \
